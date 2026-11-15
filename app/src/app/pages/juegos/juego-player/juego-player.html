@@ -1,0 +1,24 @@
+<div class="pagina">
+  <div class="barra">
+    <a class="btn btn-claro btn-mini" routerLink="/" fragment="juegos">‹ Volver a los juegos</a>
+    @if (juego(); as j) {
+      <h1><span aria-hidden="true">{{ j.icono }}</span> {{ j.titulo }}</h1>
+      <app-estrellas [valor]="estrellas()" />
+    }
+  </div>
+
+  @if (juego()?.habilitado === false) {
+    <p class="aviso-admin">Este juego está desactivado para los estudiantes. Tú lo ves porque eres administrador.</p>
+  }
+
+  @if (componente(); as c) {
+    <ng-container *ngComponentOutlet="c" />
+  } @else if (error()) {
+    <section class="tarjeta centro">
+      <h2>No encontramos este juego</h2>
+      <a class="btn btn-sol btn-grande" routerLink="/" fragment="juegos">Ver los juegos</a>
+    </section>
+  } @else {
+    <p class="cargando" role="status">Abriendo el libro…</p>
+  }
+</div>

@@ -1,0 +1,90 @@
+<div class="pagina">
+  <header class="cab">
+    <div>
+      <h1>Panel docente</h1>
+      <p>Hola, {{ auth.usuario()?.nombre }}. Aquí decides qué juegos ven las niñas y los niños.</p>
+    </div>
+    <a class="btn btn-claro btn-mini" routerLink="/">Ver como estudiante</a>
+  </header>
+
+  <div class="pestanas" role="tablist">
+    <button type="button" role="tab" [attr.aria-selected]="pestana() === 'juegos'" (click)="pestana.set('juegos')">🎮 Juegos</button>
+    <button type="button" role="tab" [attr.aria-selected]="pestana() === 'ajustes'" (click)="pestana.set('ajustes')">⚙ Ajustes</button>
+    <button type="button" role="tab" [attr.aria-selected]="pestana() === 'uso'" (click)="pestana.set('uso')">📊 Uso</button>
+  </div>
+
+  @switch (pestana()) {
+    @case ('juegos') {
+      <section class="tarjeta">
+        <div class="fila resumen">
+          <strong>{{ juegos.totalHabilitados() }} de {{ juegos.todos().length }} juegos activos</strong>
+          <button type="button" class="btn btn-menta btn-mini" (click)="todos(true)">Activar todos</button>
+          <button type="button" class="btn btn-coral btn-mini" (click)="todos(false)">Desactivar todos</button>
+          <button type="button" class="btn btn-claro btn-mini" (click)="restablecerJuegos()">Restablecer</button>
+        </div>
+        <label for="buscar" class="sr-only">Buscar juego</label>
+        <input id="buscar" type="text" placeholder="Buscar un juego…" [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)" />
+
+        @for (g of grupos(); track g.cat.id) {
+          <h2 class="cat" [class]="'cat ' + g.cat.color">{{ g.cat.titulo }}</h2>
+          <div class="fila mini-acc">
+            <button type="button" class="btn btn-claro btn-mini" (click)="cambiarCategoria(g.juegos.map(j => j.slug), true)">Activar esta isla</button>
+            <button type="button" class="btn btn-claro btn-mini" (click)="cambiarCategoria(g.juegos.map(j => j.slug), false)">Desactivar esta isla</button>
+          </div>
+          <ul class="lista">
+            @for (j of g.juegos; track j.slug) {
+              <li [class.off]="!j.habilitado">
+                <span class="ico" aria-hidden="true">{{ j.icono }}</span>
+                <span class="info"><strong>{{ j.titulo }}</strong><small>{{ j.habilidad }} · {{ j.edad }}</small></span>
+                <a class="btn btn-claro btn-mini" [routerLink]="['/juegos', j.slug]">Probar</a>
+                <button type="button" class="interruptor" role="switch" [attr.aria-checked]="j.habilitado"
+                  [attr.aria-label]="(j.habilitado ? 'Desactivar ' : 'Activar ') + j.titulo" (click)="juegos.alternar(j.slug)">
+                  <span class="perilla"></span><span class="txt">{{ j.habilitado ? 'Activo' : 'Apagado' }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        } @empty { <p>No hay juegos con ese nombre.</p> }
+      </section>
+    }
+
+    @case ('ajustes') {
+      <section class="tarjeta">
+        <h2>Mensaje del día</h2>
+        <p class="nota">Aparece arriba en la página de inicio. Déjalo vacío para ocultarlo.</p>
+        <label for="msg" class="sr-only">Mensaje del día</label>
+        <input id="msg" type="text" maxlength="90" [ngModel]="config.mensajeDelDia()" (ngModelChange)="config.mensajeDelDia.set($event)" />
+
+        <h2 class="sep">¿Quién va a jugar?</h2>
+        <p class="nota">Filtra preguntas y textos según el público.</p>
+        <div class="selector">
+          @for (n of niveles; track n.id) {
+            <button type="button" [attr.aria-pressed]="config.nivel() === n.id" (click)="config.nivel.set(n.id)"><strong>{{ n.titulo }}</strong><small>{{ n.ayuda }}</small></button>
+          }
+        </div>
+
+        <h2 class="sep">Este equipo</h2>
+        <div class="fila">
+          <button type="button" class="btn btn-claro" (click)="config.restablecer()">Restablecer mensaje y público</button>
+          <button type="button" class="btn btn-coral" (click)="borrarProgreso()">Borrar estrellas e insignias</button>
+        </div>
+        <p class="nota">Todo se guarda en el navegador de este equipo; no hay base de datos.</p>
+      </section>
+    }
+
+    @case ('uso') {
+      <section class="tarjeta">
+        <h2>Uso en este equipo</h2>
+        <p>Partidas jugadas: <strong>{{ totalPartidas() }}</strong> · Estrellas ganadas: <strong>{{ progreso.estrellas() }}</strong></p>
+        <table>
+          <thead><tr><th>Juego</th><th>Partidas</th><th>Estrellas</th></tr></thead>
+          <tbody>
+            @for (u of usos(); track u.slug) {
+              <tr><td>{{ u.icono }} {{ u.titulo }}</td><td>{{ u.partidas }}</td><td>{{ u.estrellas }} / 3</td></tr>
+            }
+          </tbody>
+        </table>
+      </section>
+    }
+  }
+</div>

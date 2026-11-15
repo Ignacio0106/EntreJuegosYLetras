@@ -1,0 +1,16 @@
+<footer class="pie">
+  <div class="contenido">
+    <nav class="nav" aria-label="Navegación del pie de página">
+      <a routerLink="/">Inicio</a>
+      <a routerLink="/" fragment="juegos">Juegos</a>
+      <a routerLink="/" fragment="derechos">Derechos</a>
+      @if (auth.esAdmin()) { <a routerLink="/admin">Panel docente</a> } @else { <a routerLink="/login">Docentes</a> }
+    </nav>
+    <p class="frase">Leer es un derecho y también un juego. 🦥</p>
+    <div class="creditos">
+      <p>{{ creditos.proyecto }} · {{ creditos.universidad }}</p>
+      @if (creditos.escuelasAliadas.length) { <p>Escuelas aliadas: {{ creditos.escuelasAliadas.join(' · ') }}</p> }
+      <p>© {{ year }}</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,6 @@
+.pie { background: var(--sol); border-top: 4px solid var(--tinta); padding: 1.6rem clamp(1rem, 5vw, 4rem); color: var(--tinta); }
+.contenido { max-width: 1100px; margin: 0 auto; display: grid; gap: .8rem; }
+.nav { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; }
+.nav a { font: 800 1.1rem var(--f-titulo); color: var(--tinta); text-underline-offset: 4px; min-height: 44px; display: inline-flex; align-items: center; }
+.frase { font: 700 1.1rem var(--f-titulo); margin: 0; }
+.creditos { font-size: .85rem; opacity: .85; } .creditos p { margin: 0; }

@@ -1,0 +1,4 @@
+.app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+.content { flex: 1; }
+.saltar { position: absolute; left: -999px; top: 8px; background: var(--sol); padding: .6rem 1rem; border-radius: 12px; z-index: 999; }
+.saltar:focus { left: 8px; }

@@ -1,0 +1,20 @@
+<div class="pagina">
+  <section class="tarjeta caja">
+    <h1>Entrada para docentes</h1>
+    <p>Las niñas y los niños no necesitan entrar: solo tocan un juego y juegan.</p>
+    <form (ngSubmit)="entrar()" autocomplete="off">
+      <label for="usuario">Usuario</label>
+      <input id="usuario" name="usuario" type="text" [(ngModel)]="usuario" required autocapitalize="none" />
+      <label for="clave">Clave</label>
+      <div class="fila">
+        <input id="clave" name="clave" [type]="verClave() ? 'text' : 'password'" [(ngModel)]="clave" required style="flex:1" />
+        <button type="button" class="btn btn-claro btn-mini" (click)="verClave.set(!verClave())">{{ verClave() ? 'Ocultar' : 'Ver' }}</button>
+      </div>
+      @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+      <div class="fila acciones">
+        <button type="submit" class="btn btn-menta btn-grande">Entrar</button>
+        <a class="btn btn-claro" routerLink="/">Volver a jugar</a>
+      </div>
+    </form>
+  </section>
+</div>

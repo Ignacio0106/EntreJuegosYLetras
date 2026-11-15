@@ -1,0 +1,5 @@
+.pagina { display: grid; place-items: center; padding: 2rem 1rem 4rem; }
+.caja { width: min(100%, 460px); }
+form { display: grid; gap: .7rem; }
+.error { background: var(--coral-suave); border-radius: 12px; padding: .6rem .9rem; font-weight: 700; color: var(--coral-fuerte); }
+.acciones { margin-top: .6rem; }

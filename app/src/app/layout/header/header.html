@@ -1,0 +1,60 @@
+<header class="barra">
+  <a class="marca" routerLink="/" aria-label="¡El juego de leer! Ir al inicio">
+    <span class="logo" aria-hidden="true">📖</span>
+    <span class="nombre">¡El juego de leer!</span>
+  </a>
+
+  <button type="button" class="perfil" (click)="abrir('perfil')" [attr.aria-expanded]="panel() === 'perfil'" aria-label="Mi perfil">
+    <span class="avatar" aria-hidden="true">{{ progreso.perfil().avatar }}</span>
+    <span class="quien">{{ progreso.perfil().nombre }}</span>
+  </button>
+
+  <div class="medidor" role="img" [attr.aria-label]="'Medidor de lectura: ' + progreso.estrellas() + ' estrellas de ' + progreso.meta">
+    <span class="medidor-t">Mi medidor</span>
+    <span class="libros">
+      @for (l of progreso.libros; track l) { <span class="libro" [class.lleno]="l < progreso.librosLlenos()" aria-hidden="true">📘</span> }
+    </span>
+    <span class="est">⭐ {{ progreso.estrellas() }}</span>
+  </div>
+
+  <button type="button" class="insignias" (click)="abrir('insignias')" [attr.aria-expanded]="panel() === 'insignias'" aria-label="Mis insignias">
+    @for (i of progreso.insignias(); track i.id) { <span class="ins" [class.ganada]="i.ganada" aria-hidden="true">{{ i.icono }}</span> }
+  </button>
+
+  <div class="ajustes">
+    <button type="button" class="icono" (click)="efectos.alternarSonido()" [attr.aria-pressed]="efectos.sonidoActivo()" [attr.aria-label]="efectos.sonidoActivo() ? 'Apagar sonidos' : 'Encender sonidos'">{{ efectos.sonidoActivo() ? '🔔' : '🔕' }}</button>
+    <button type="button" class="icono letra" (click)="config.letraGrande.set(!config.letraGrande())" [attr.aria-pressed]="config.letraGrande()" aria-label="Letra grande">Aa</button>
+    @if (auth.esAdmin()) {
+      <a class="docente" routerLink="/admin">⚙ Panel</a>
+      <button type="button" class="docente" (click)="salir()">Salir</button>
+    } @else {
+      <a class="docente suave" routerLink="/login">Docentes</a>
+    }
+  </div>
+
+  @if (panel() === 'perfil') {
+    <div class="panel" role="dialog" aria-label="Mi perfil">
+      <h2>¿Cómo te llamas?</h2>
+      <input type="text" name="nombre" maxlength="14" [(ngModel)]="nombre" aria-label="Tu nombre o apodo" />
+      <p class="nota">Elige tu compañero de lectura:</p>
+      <div class="avatares">
+        @for (a of avatares; track a) {
+          <button type="button" class="av" [class.sel]="avatar === a" (click)="avatar = a" [attr.aria-label]="'Compañero ' + a">{{ a }}</button>
+        }
+      </div>
+      <div class="fila"><button type="button" class="btn btn-menta" (click)="guardar()">Guardar</button><button type="button" class="btn btn-claro btn-mini" (click)="panel.set(null)">Cerrar</button></div>
+    </div>
+  }
+
+  @if (panel() === 'insignias') {
+    <div class="panel" role="dialog" aria-label="Mis insignias">
+      <h2>Mis insignias</h2>
+      <ul class="lista-ins">
+        @for (i of progreso.insignias(); track i.id) {
+          <li [class.ganada]="i.ganada"><span class="ins-g" aria-hidden="true">{{ i.icono }}</span><span><strong>{{ i.nombre }}</strong><br /><small>{{ i.descripcion }}</small></span></li>
+        }
+      </ul>
+      <button type="button" class="btn btn-claro btn-mini" (click)="panel.set(null)">Cerrar</button>
+    </div>
+  }
+</header>

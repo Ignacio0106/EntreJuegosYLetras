@@ -1,0 +1,21 @@
+.pagina { max-width: 940px; margin: 0 auto; padding: 1.6rem 1rem 3rem; }
+.cab { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center; }
+.pestanas { display: flex; gap: .5rem; margin: 1rem 0 1.4rem; flex-wrap: wrap; }
+.pestanas button { font: 800 1.05rem var(--f-titulo); color: var(--tinta); background: #fff; border: 3px solid var(--tinta); border-radius: 999px; padding: .6em 1.3em; cursor: pointer; min-height: 48px; }
+.pestanas button[aria-selected='true'] { background: var(--sol); box-shadow: 0 4px 0 var(--tinta); }
+.resumen { margin-bottom: 1rem; }
+.cat { font-size: 1.3rem; margin: 1.6rem 0 .4rem; padding: .3em .8em; border-radius: 14px; border: 3px solid var(--tinta); background: var(--cielo); }
+.cat.menta { background: var(--menta); } .cat.sol { background: var(--sol); } .cat.coral { background: var(--coral); } .cat.lila { background: #b79cff; }
+.mini-acc { margin-bottom: .6rem; }
+.lista { list-style: none; padding: 0; margin: 0; display: grid; gap: .6rem; }
+.lista li { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; border: 3px solid var(--linea); border-radius: 18px; padding: .6rem .9rem; }
+.lista li.off { background: #f5f8fb; opacity: .85; }
+.ico { font-size: 1.8rem; } .info { flex: 1; min-width: 160px; display: grid; } .info small { color: var(--tinta-suave); }
+.interruptor { display: inline-flex; align-items: center; gap: .5rem; min-width: 132px; min-height: 48px; padding: .3rem .8rem .3rem .4rem; border-radius: 999px; border: 3px solid var(--tinta); background: var(--coral-suave); cursor: pointer; font: 800 .95rem var(--f-titulo); color: var(--tinta); }
+.interruptor[aria-checked='true'] { background: var(--menta); }
+.perilla { width: 28px; height: 28px; border-radius: 50%; background: #fff; border: 3px solid var(--tinta); transition: transform .15s; }
+.interruptor[aria-checked='true'] .perilla { transform: translateX(0); background: var(--sol); }
+.sep { margin-top: 1.8rem; }
+table { width: 100%; border-collapse: collapse; margin-top: .8rem; }
+th, td { text-align: left; padding: .6rem .5rem; border-bottom: 2px solid var(--linea); }
+th { font-family: var(--f-titulo); }

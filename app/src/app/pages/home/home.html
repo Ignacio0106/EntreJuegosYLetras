@@ -1,0 +1,93 @@
+<!-- Dibujo reutilizable: isla hecha con un libro abierto -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="isla-libro" viewBox="0 0 260 170">
+    <path d="M42 100 Q130 178 218 100 L204 96 Q130 142 56 96Z" fill="#9fb4cf" stroke="#23324a" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M14 80 Q130 114 246 80 L252 100 Q130 136 8 100Z" fill="#ff8a7a" stroke="#23324a" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M22 72 Q76 48 130 78 V108 Q76 82 22 100Z" fill="#fff" stroke="#23324a" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M238 72 Q184 48 130 78 V108 Q184 82 238 100Z" fill="#fffaf0" stroke="#23324a" stroke-width="3" stroke-linejoin="round"/>
+    <g stroke="#cfe4f2" stroke-width="3" stroke-linecap="round">
+      <path d="M38 80 Q70 68 110 88"/><path d="M42 90 Q72 80 110 98"/><path d="M150 88 Q190 68 222 80"/><path d="M150 98 Q190 80 218 90"/>
+    </g>
+  </symbol>
+</svg>
+
+<section class="hero">
+  <div class="hero-texto">
+    @if (config.mensajeDelDia()) { <p class="del-dia">📣 {{ config.mensajeDelDia() }}</p> }
+    <h1>¡El juego<br />de leer!</h1>
+    <p class="sub">¡Explora, juega y lee! Cada isla guarda juegos para imaginar, preguntar y disfrutar las historias de Costa Rica.</p>
+    <div class="fila">
+      <a class="btn btn-sol btn-grande" routerLink="/" fragment="juegos">¡Empieza la aventura!</a>
+      <app-audio-btn [texto]="textoHero" etiqueta="Escuchar la bienvenida" />
+    </div>
+  </div>
+
+  <div class="escena" aria-hidden="false">
+    <span class="nube n1"></span><span class="nube n2"></span><span class="nube n3"></span>
+    <svg class="isla i-grande" viewBox="0 0 260 170" aria-hidden="true"><use href="#isla-libro"/></svg>
+    <svg class="isla i-media" viewBox="0 0 260 170" aria-hidden="true"><use href="#isla-libro"/></svg>
+    <svg class="isla i-chica" viewBox="0 0 260 170" aria-hidden="true"><use href="#isla-libro"/></svg>
+    <span class="estrella e1" aria-hidden="true">✨</span><span class="estrella e2" aria-hidden="true">📖</span><span class="estrella e3" aria-hidden="true">⭐</span>
+    <app-mascota class="lola" />
+    <p class="globo">{{ saludo() }} ¿Jugamos?</p>
+  </div>
+</section>
+
+<section id="juegos" class="zona">
+  <div class="zona-cab">
+    <h2>Elige una isla de juegos</h2>
+    <p>Toca un juego para empezar. Con cada juego ganas hasta 3 estrellas ⭐ y llenas tu medidor de lectura.</p>
+  </div>
+
+  @if (!hayJuegos()) {
+    <div class="tarjeta centro">
+      <h3>Hoy los juegos están descansando</h3>
+      <p>Pídele a tu docente que active algunos y vuelve a intentarlo.</p>
+    </div>
+  }
+
+  @for (g of grupos(); track g.cat.id) {
+    <section class="grupo" [class]="'grupo ' + g.cat.color" [attr.aria-labelledby]="'cat-' + g.cat.id">
+      <header class="grupo-cab">
+        <h3 [id]="'cat-' + g.cat.id">{{ g.cat.titulo }}</h3>
+        <p>{{ g.cat.descripcion }}</p>
+      </header>
+      <div class="rejilla">
+        @for (j of g.juegos; track j.slug) {
+          <a class="juego" [class.apagado]="!j.habilitado" [routerLink]="['/juegos', j.slug]">
+            <span class="icono" aria-hidden="true">{{ j.icono }}</span>
+            <span class="titulo">{{ j.titulo }}</span>
+            <span class="desc">{{ j.descripcion }}</span>
+            <span class="datos">
+              @if (j.nuevo) { <span class="dato nuevo">✨ Nuevo</span> }
+              @if (!j.habilitado) { <span class="dato off">Desactivado</span> }
+              <span class="dato">{{ j.edad }}</span><span class="dato">{{ j.duracion }}</span>
+            </span>
+            <span class="pie">
+              <app-estrellas [valor]="progreso.estrellasDe(j.slug)" />
+              <span class="jugar">{{ progreso.partidasDe(j.slug) ? 'Jugar otra vez' : '¡Jugar!' }}</span>
+            </span>
+          </a>
+        }
+      </div>
+    </section>
+  }
+</section>
+
+<section id="derechos" class="derechos">
+  <div class="derechos-cab">
+    <h2>El Rincón de los Derechos</h2>
+    <p class="grande">{{ derechosIntro }}</p>
+    <app-audio-btn [texto]="'El Rincón de los Derechos. ' + derechosIntro" etiqueta="Escuchar el mensaje" />
+  </div>
+  <ul class="medallas">
+    @for (d of derechos; track d.id) {
+      <li class="medalla">
+        <span class="sello" aria-hidden="true">{{ d.icono }}</span>
+        <h3>Derecho a {{ d.titulo.toLowerCase() }}</h3>
+        <p>{{ d.texto }}</p>
+        <app-audio-btn [texto]="'Derecho a ' + d.titulo.toLowerCase() + '. ' + d.texto" />
+      </li>
+    }
+  </ul>
+</section>
