@@ -22,6 +22,7 @@ export class Header {
 
   protected readonly avatares = AVATARES;
   protected readonly panel = signal<'perfil' | 'insignias' | null>(null);
+  protected readonly menu = signal(false);
   protected nombre = '';
   protected avatar = '';
 

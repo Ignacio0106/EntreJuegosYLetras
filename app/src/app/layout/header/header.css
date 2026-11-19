@@ -38,3 +38,31 @@
 .lista-ins li { display: flex; gap: .8rem; align-items: center; opacity: .45; filter: grayscale(.8); }
 .lista-ins li.ganada { opacity: 1; filter: none; }
 .ins-g { font-size: 2rem; }
+
+/* ---------- Menú hamburguesa ---------- */
+.menu { display: contents; }
+.hamburguesa { display: none; }
+
+@media (max-width: 760px) {
+  .barra { min-height: 0; flex-wrap: nowrap; gap: .5rem; padding: .4rem .7rem; border-bottom-width: 3px; }
+  .logo { width: 40px; height: 40px; font-size: 1.2rem; }
+  .perfil { min-height: 44px; min-width: 0; }
+  .quien { max-width: 9ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .marca { margin-right: auto; }
+  .hamburguesa { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--tinta); background: var(--sol); cursor: pointer; padding: 0; }
+  .rayas, .rayas::before, .rayas::after { display: block; width: 22px; height: 3px; border-radius: 3px; background: var(--tinta); transition: transform .15s, background .15s; }
+  .rayas { position: relative; }
+  .rayas::before, .rayas::after { content: ''; position: absolute; left: 0; }
+  .rayas::before { top: -7px; } .rayas::after { top: 7px; }
+  .hamburguesa[aria-expanded='true'] .rayas { background: transparent; }
+  .hamburguesa[aria-expanded='true'] .rayas::before { top: 0; transform: rotate(45deg); }
+  .hamburguesa[aria-expanded='true'] .rayas::after { top: 0; transform: rotate(-45deg); }
+
+  .menu { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: .8rem; padding: 1rem .9rem 1.2rem; background: #fff; border-bottom: 4px solid var(--tinta); box-shadow: 0 8px 0 rgba(35, 50, 74, .15); z-index: 6; }
+  .menu.abierto { display: flex; }
+  .medidor { justify-content: space-between; }
+  .medidor-t { display: inline; }
+  .insignias { display: flex; justify-content: center; flex-wrap: wrap; }
+  .ajustes { flex-wrap: wrap; justify-content: center; }
+  .panel { left: .7rem; right: .7rem; width: auto; }
+}

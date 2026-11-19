@@ -142,3 +142,17 @@ input[type='text'], input[type='password'], input[type='number'], textarea, sele
 input:focus, textarea:focus, select:focus { border-color: var(--cielo-fuerte); outline: 3px solid var(--cielo); outline-offset: 1px; }
 label { font: 700 1rem var(--f-titulo); display: block; margin-bottom: .3rem; }
 .fila.centro { margin-top: 1rem; }
+
+/* ---------- Responsivo global ---------- */
+html { -webkit-text-size-adjust: 100%; }
+body { overflow-x: hidden; }
+table { display: block; overflow-x: auto; max-width: 100%; }
+@media (max-width: 600px) {
+  :root { font-size: 16px; }
+  html:has(body.letra-grande) { font-size: 19px; }
+  .tarjeta { border-width: 2px; box-shadow: 0 5px 0 var(--tinta); margin-bottom: 1.2rem; }
+  .btn-grande { font-size: 1.15rem; padding: .9em 1.4em; }
+  .pregunta-caja { padding: .9rem 1rem; flex-wrap: wrap; }
+  .selector { grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+  .fila .btn { flex: 1 1 auto; }
+}

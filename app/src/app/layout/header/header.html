@@ -9,6 +9,11 @@
     <span class="quien">{{ progreso.perfil().nombre }}</span>
   </button>
 
+  <button type="button" class="hamburguesa" (click)="menu.set(!menu())" [attr.aria-expanded]="menu()" aria-controls="menu-cab" aria-label="Menú">
+    <span class="rayas" aria-hidden="true"></span>
+  </button>
+
+  <div class="menu" id="menu-cab" [class.abierto]="menu()">
   <div class="medidor" role="img" [attr.aria-label]="'Medidor de lectura: ' + progreso.estrellas() + ' estrellas de ' + progreso.meta">
     <span class="medidor-t">Mi medidor</span>
     <span class="libros">
@@ -30,6 +35,7 @@
     } @else {
       <a class="docente suave" routerLink="/login">Docentes</a>
     }
+  </div>
   </div>
 
   @if (panel() === 'perfil') {
