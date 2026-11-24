@@ -1,6 +1,7 @@
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import { CATEGORIAS, JUEGOS } from '../data/juegos.data';
 import { Categoria, JuegoEstado } from '../models/juego.model';
+import { AjustesNubeService } from './ajustes-nube.service';
 import { AuthService } from './auth.service';
 
 const CLAVE = 'jdl-juegos-habilitados';
@@ -9,6 +10,7 @@ const CLAVE = 'jdl-juegos-habilitados';
 @Injectable({ providedIn: 'root' })
 export class JuegosService {
   private readonly auth = inject(AuthService);
+  private readonly nube = inject(AjustesNubeService);
   private readonly cambios = signal<Record<string, boolean>>(this.leer());
 
   readonly categorias: Categoria[] = CATEGORIAS;
@@ -25,7 +27,7 @@ export class JuegosService {
 
   /** Lo que se ve en el menú: el estudiante solo ve los habilitados; el admin los ve todos. */
   readonly visibles = computed(() =>
-    this.auth.esAdmin() ? this.todos() : this.todos().filter((j) => j.habilitado)
+    this.auth.esDocente() ? this.todos() : this.todos().filter((j) => j.habilitado)
   );
 
   readonly porCategoria = computed(() =>
@@ -38,6 +40,11 @@ export class JuegosService {
 
   constructor() {
     effect(() => localStorage.setItem(CLAVE, JSON.stringify(this.cambios())));
+    // Lo que diga Firebase manda (se actualiza en vivo en todos los dispositivos).
+    effect(() => {
+      const remoto = this.nube.datos();
+      if (remoto) this.cambios.set(remoto.juegos ?? {});
+    });
   }
 
   buscar(slug: string): JuegoEstado | undefined {
@@ -46,7 +53,7 @@ export class JuegosService {
 
   disponible(slug: string): boolean {
     const j = this.buscar(slug);
-    return !!j && (j.habilitado || this.auth.esAdmin());
+    return !!j && (j.habilitado || this.auth.esDocente());
   }
 
   alternar(slug: string): void {
@@ -56,6 +63,7 @@ export class JuegosService {
 
   establecer(slug: string, valor: boolean): void {
     this.cambios.update((c) => ({ ...c, [slug]: valor }));
+    this.persistir();
   }
 
   establecerVarios(slugs: string[], valor: boolean): void {
@@ -64,10 +72,17 @@ export class JuegosService {
       slugs.forEach((s) => (n[s] = valor));
       return n;
     });
+    this.persistir();
   }
 
   restablecer(): void {
     this.cambios.set({});
+    this.persistir();
+  }
+
+  /** Solo el docente puede escribir en Firebase (las reglas también lo exigen). */
+  private persistir(): void {
+    if (this.nube.activo && this.auth.esDocente()) void this.nube.guardar({ juegos: this.cambios() });
   }
 
   private leer(): Record<string, boolean> {

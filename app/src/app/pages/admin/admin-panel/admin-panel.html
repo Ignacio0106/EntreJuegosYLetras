@@ -8,9 +8,17 @@
   </header>
 
   <div class="pestanas" role="tablist">
-    <button type="button" role="tab" [attr.aria-selected]="pestana() === 'juegos'" (click)="pestana.set('juegos')">🎮 Juegos</button>
-    <button type="button" role="tab" [attr.aria-selected]="pestana() === 'ajustes'" (click)="pestana.set('ajustes')">⚙ Ajustes</button>
-    <button type="button" role="tab" [attr.aria-selected]="pestana() === 'uso'" (click)="pestana.set('uso')">📊 Uso</button>
+    <button type="button" role="tab" [attr.aria-selected]="pestana() === 'juegos'" (click)="abrirPestana('juegos')">🎮 Juegos</button>
+    @if (usaNube) {
+      <button type="button" role="tab" [attr.aria-selected]="pestana() === 'lectores'" (click)="abrirPestana('lectores')">🧒 Lectores</button>
+    }
+    @if (usaNube && auth.esAdmin()) {
+      <button type="button" role="tab" [attr.aria-selected]="pestana() === 'docentes'" (click)="abrirPestana('docentes')">
+        👥 Docentes @if (solicitudes().length) { <span class="contador" aria-label="solicitudes pendientes">{{ solicitudes().length }}</span> }
+      </button>
+    }
+    <button type="button" role="tab" [attr.aria-selected]="pestana() === 'ajustes'" (click)="abrirPestana('ajustes')">⚙ Ajustes</button>
+    <button type="button" role="tab" [attr.aria-selected]="pestana() === 'uso'" (click)="abrirPestana('uso')">📊 Uso</button>
   </div>
 
   @switch (pestana()) {
@@ -48,6 +56,83 @@
       </section>
     }
 
+    @case ('lectores') {
+      <section class="tarjeta">
+        <h2>Lectores con código</h2>
+        <p class="nota">Cada niño elige su propio código en su perfil. Si alguien lo olvida, búscalo aquí por su apodo y dícelo en voz baja. @if (auth.esAdmin()) { Para dejar un código libre, bórralo. }</p>
+        <div class="fila resumen">
+          <strong>{{ lectores().length }} lectores</strong>
+          <button type="button" class="btn btn-claro btn-mini" (click)="cargarLectores()" [disabled]="cargandoLectores()">{{ cargandoLectores() ? 'Cargando…' : '↻ Actualizar' }}</button>
+        </div>
+        <label for="buscar-lector" class="sr-only">Buscar por código o apodo</label>
+        <input id="buscar-lector" type="text" placeholder="Buscar por apodo o código…" [ngModel]="buscarLector()" (ngModelChange)="buscarLector.set($event)" />
+        @if (errorLectores()) { <p class="aviso-error" role="alert">{{ errorLectores() }}</p> }
+        <table>
+          <thead><tr><th>Código</th><th>Niño o niña</th><th>⭐</th><th>Juegos</th><th>Última vez</th><th></th></tr></thead>
+          <tbody>
+            @for (l of lectoresFiltrados(); track l.codigo) {
+              <tr>
+                <td><strong class="cod">{{ l.codigo }}</strong></td>
+                <td>{{ l.avatar }} {{ l.nombre }}</td>
+                <td>{{ l.estrellas }}</td>
+                <td>{{ l.juegos }}</td>
+                <td>{{ fecha(l.actualizado) }}</td>
+                <td>@if (auth.esAdmin()) { <button type="button" class="btn btn-claro btn-mini" (click)="borrarLector(l)" [attr.aria-label]="'Borrar el código ' + l.codigo">🗑</button> }</td>
+              </tr>
+            } @empty {
+              <tr><td colspan="6">{{ cargandoLectores() ? 'Cargando…' : 'Todavía no hay lectores con código.' }}</td></tr>
+            }
+          </tbody>
+        </table>
+      </section>
+    }
+
+    @case ('docentes') {
+      <section class="tarjeta">
+        <h2>Solicitudes pendientes</h2>
+        <p class="nota">Personas que crearon una cuenta de docente y esperan tu aprobación. Al aprobarlas, pueden entrar al panel.</p>
+        @if (errorDocentes()) { <p class="aviso-error" role="alert">{{ errorDocentes() }}</p> }
+        <ul class="lista">
+          @for (s of solicitudes(); track s.uid) {
+            <li>
+              <span class="ico" aria-hidden="true">🙋</span>
+              <span class="info"><strong>{{ s.nombre }}</strong><small>{{ s.correo }} · {{ fecha(s.creado) }}</small></span>
+              <button type="button" class="btn btn-menta btn-mini" (click)="aprobar(s)">Aprobar</button>
+              <button type="button" class="btn btn-claro btn-mini" (click)="rechazar(s)">Rechazar</button>
+            </li>
+          } @empty {
+            <li class="vacio">{{ cargandoDocentes() ? 'Cargando…' : 'No hay solicitudes pendientes.' }}</li>
+          }
+        </ul>
+
+        <h2 class="sep">Docentes y administradores</h2>
+        <div class="fila resumen">
+          <strong>{{ docentes().length }} personas</strong>
+          <button type="button" class="btn btn-claro btn-mini" (click)="cargarDocentes()" [disabled]="cargandoDocentes()">{{ cargandoDocentes() ? 'Cargando…' : '↻ Actualizar' }}</button>
+        </div>
+        <ul class="lista">
+          @for (d of docentes(); track d.uid) {
+            <li>
+              <span class="ico" aria-hidden="true">{{ d.rol === 'admin' ? '👑' : '🧑‍🏫' }}</span>
+              <span class="info">
+                <strong>{{ d.nombre }} @if (d.uid === auth.uid()) { <span class="yo">(tú)</span> }</strong>
+                <small>{{ d.correo || 'Sin correo guardado' }} · {{ d.rol === 'admin' ? 'Administrador' : 'Docente' }}</small>
+              </span>
+              @if (d.uid !== auth.uid()) {
+                @if (d.rol === 'docente') {
+                  <button type="button" class="btn btn-claro btn-mini" (click)="cambiarRol(d, 'admin')">Hacer administrador</button>
+                } @else {
+                  <button type="button" class="btn btn-claro btn-mini" (click)="cambiarRol(d, 'docente')">Dejar como docente</button>
+                }
+                <button type="button" class="btn btn-claro btn-mini" (click)="quitarDocente(d)" [attr.aria-label]="'Quitar a ' + d.nombre">🗑</button>
+              }
+            </li>
+          }
+        </ul>
+        <p class="nota">Tu propia cuenta no se puede quitar ni cambiar desde aquí, para que siempre quede al menos un administrador.</p>
+      </section>
+    }
+
     @case ('ajustes') {
       <section class="tarjeta">
         <h2>Mensaje del día</h2>
@@ -68,13 +153,14 @@
           <button type="button" class="btn btn-claro" (click)="config.restablecer()">Restablecer mensaje y público</button>
           <button type="button" class="btn btn-coral" (click)="borrarProgreso()">Borrar estrellas e insignias</button>
         </div>
-        <p class="nota">Todo se guarda en el navegador de este equipo; no hay base de datos.</p>
+        <p class="nota">@if (usaNube) { Los juegos activos, el mensaje del día y el público se guardan en Firebase y se ven en todos los equipos. Las estrellas de este equipo se guardan en el navegador. } @else { Todo se guarda en el navegador de este equipo; Firebase no está configurado. }</p>
       </section>
     }
 
     @case ('uso') {
       <section class="tarjeta">
         <h2>Uso en este equipo</h2>
+        @if (usaNube) { <p class="nota">Tus partidas de prueba como docente no se cuentan aquí ni en el avance de ningún niño.</p> }
         <p>Partidas jugadas: <strong>{{ totalPartidas() }}</strong> · Estrellas ganadas: <strong>{{ progreso.estrellas() }}</strong></p>
         <table>
           <thead><tr><th>Juego</th><th>Partidas</th><th>Estrellas</th></tr></thead>

@@ -1,5 +1,26 @@
 .pagina { display: grid; place-items: center; padding: 2rem 1rem 4rem; }
-.caja { width: min(100%, 460px); }
-form { display: grid; gap: .7rem; }
-.error { background: var(--coral-suave); border-radius: 12px; padding: .6rem .9rem; font-weight: 700; color: var(--coral-fuerte); }
-.acciones { margin-top: .6rem; }
+.caja { width: min(100%, 480px); }
+form { display: grid; gap: .5rem; }
+form label { margin-top: .5rem; }
+.error { background: var(--coral-suave); border-radius: 12px; padding: .6rem .9rem; font-weight: 700; color: var(--coral-fuerte); margin: .4rem 0 0; }
+
+/* Clave con ojo dentro del campo */
+.campo-clave { position: relative; }
+.campo-clave input { padding-right: 3.6rem; }
+.ojo { position: absolute; top: 50%; right: .45rem; transform: translateY(-50%); width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--tinta-suave); cursor: pointer; }
+.ojo:hover { background: var(--cielo-suave); color: var(--tinta); }
+.ojo[aria-pressed='true'] { color: var(--cielo-fuerte); }
+
+/* Entrar y Volver a jugar, lado a lado */
+.acciones { display: flex; gap: .8rem; margin-top: 1rem; }
+.acciones .btn { flex: 1 1 0; min-width: 0; padding-inline: 1em; white-space: nowrap; }
+@media (max-width: 340px) { .acciones { flex-direction: column; } }
+
+/* Entrar / Crear cuenta */
+.modos { display: flex; gap: .5rem; margin: .4rem 0 .6rem; }
+.modos button { flex: 1 1 0; min-height: 44px; padding: .4em .6em; border-radius: 999px; border: 3px solid var(--linea); background: #fff; color: var(--tinta); font: 800 .95rem var(--f-titulo); cursor: pointer; }
+.modos button[aria-selected='true'] { border-color: var(--tinta); background: var(--sol); box-shadow: 0 3px 0 var(--tinta); }
+.aviso-ok { background: var(--menta-suave); border-radius: 12px; padding: .6rem .9rem; font-weight: 700; color: var(--menta-fuerte); margin: .4rem 0 0; }
+
+.enlace { justify-self: start; background: none; border: 0; padding: .3rem 0; min-height: 44px; color: var(--cielo-fuerte); font: 700 .95rem var(--f-texto); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.enlace:disabled { opacity: .5; cursor: default; }

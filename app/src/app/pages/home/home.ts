@@ -1,6 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DERECHOS, DERECHOS_INTRO } from '../../core/data/derechos.data';
+import { AccesoService } from '../../core/services/acceso.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ConfigService } from '../../core/services/config.service';
 import { JuegosService } from '../../core/services/juegos.service';
@@ -20,6 +21,7 @@ export class Home {
   protected readonly progreso = inject(ProgresoService);
   protected readonly config = inject(ConfigService);
   protected readonly auth = inject(AuthService);
+  protected readonly acceso = inject(AccesoService);
 
   protected readonly grupos = this.juegos.porCategoria;
   protected readonly derechos = DERECHOS;

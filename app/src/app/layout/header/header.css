@@ -16,7 +16,7 @@
 .libros { display: inline-flex; }
 .libro { font-size: 1.05rem; filter: grayscale(1); opacity: .35; } .libro.lleno { filter: none; opacity: 1; }
 .est { font: 800 1rem var(--f-titulo); }
-@media (max-width: 760px) { .medidor-t { display: none; } .libro { font-size: .8rem; } }
+@media (max-width: 1000px) { .medidor-t { display: none; } .libro { font-size: .8rem; } }
 
 .insignias { display: flex; gap: .1rem; background: none; border: 3px solid var(--linea); border-radius: 999px; padding: .2rem .6rem; cursor: pointer; min-height: 48px; align-items: center; }
 .ins { font-size: 1.2rem; filter: grayscale(1); opacity: .3; } .ins.ganada { filter: none; opacity: 1; }
@@ -43,7 +43,7 @@
 .menu { display: contents; }
 .hamburguesa { display: none; }
 
-@media (max-width: 760px) {
+@media (max-width: 1000px) {
   .barra { min-height: 0; flex-wrap: nowrap; gap: .5rem; padding: .4rem .7rem; border-bottom-width: 3px; }
   .logo { width: 40px; height: 40px; font-size: 1.2rem; }
   .perfil { min-height: 44px; min-width: 0; }
@@ -66,3 +66,64 @@
   .ajustes { flex-wrap: wrap; justify-content: center; }
   .panel { left: .7rem; right: .7rem; width: auto; }
 }
+
+/* Letra grande: el contenido crece, así que el menú compacto se usa en más anchos */
+@media (max-width: 1800px) {
+  :host-context(body.letra-grande) .barra { min-height: 0; flex-wrap: nowrap; gap: .5rem; padding: .4rem .7rem; border-bottom-width: 3px; }
+  :host-context(body.letra-grande) .logo { width: 40px; height: 40px; font-size: 1.2rem; }
+  :host-context(body.letra-grande) .perfil { min-height: 44px; min-width: 0; }
+  :host-context(body.letra-grande) .quien { max-width: 9ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  :host-context(body.letra-grande) .marca { margin-right: auto; }
+  :host-context(body.letra-grande) .hamburguesa { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--tinta); background: var(--sol); cursor: pointer; padding: 0; }
+  :host-context(body.letra-grande) .rayas, :host-context(body.letra-grande) .rayas::before, :host-context(body.letra-grande) .rayas::after { display: block; width: 22px; height: 3px; border-radius: 3px; background: var(--tinta); transition: transform .15s, background .15s; }
+  :host-context(body.letra-grande) .rayas { position: relative; }
+  :host-context(body.letra-grande) .rayas::before, :host-context(body.letra-grande) .rayas::after { content: ''; position: absolute; left: 0; }
+  :host-context(body.letra-grande) .rayas::before { top: -7px; } :host-context(body.letra-grande) .rayas::after { top: 7px; }
+  :host-context(body.letra-grande) .hamburguesa[aria-expanded='true'] .rayas { background: transparent; }
+  :host-context(body.letra-grande) .hamburguesa[aria-expanded='true'] .rayas::before { top: 0; transform: rotate(45deg); }
+  :host-context(body.letra-grande) .hamburguesa[aria-expanded='true'] .rayas::after { top: 0; transform: rotate(-45deg); }
+
+  :host-context(body.letra-grande) .menu { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: .8rem; padding: 1rem .9rem 1.2rem; background: #fff; border-bottom: 4px solid var(--tinta); box-shadow: 0 8px 0 rgba(35, 50, 74, .15); z-index: 6; }
+  :host-context(body.letra-grande) .menu.abierto { display: flex; }
+  :host-context(body.letra-grande) .medidor { justify-content: space-between; }
+  :host-context(body.letra-grande) .medidor-t { display: inline; }
+  :host-context(body.letra-grande) .insignias { display: flex; justify-content: center; flex-wrap: wrap; }
+  :host-context(body.letra-grande) .ajustes { flex-wrap: wrap; justify-content: center; }
+  :host-context(body.letra-grande) .panel { left: .7rem; right: .7rem; width: auto; }
+}
+@media (min-width: 1001px) and (max-width: 1800px) {
+  :host-context(body.letra-grande) .menu { left: auto; width: min(100%, 560px); border: 4px solid var(--tinta); border-top: 0; border-radius: 0 0 24px 24px; }
+  :host-context(body.letra-grande) .panel { left: auto; width: min(92vw, 420px); }
+}
+.medidor-t, .est { white-space: nowrap; }
+.libros { flex: 1; justify-content: center; min-width: 0; overflow: hidden; }
+
+/* ---------- Código de lector ---------- */
+.codigo { display: grid; gap: .5rem; border-top: 2px dashed var(--linea); padding-top: .8rem; margin-top: .2rem; }
+.codigo .nota { margin: 0; }
+.codigo-tu { margin: 0; font: 800 1.8rem/1.1 var(--f-titulo); letter-spacing: .08em; text-align: center; background: var(--sol-suave); border: 3px dashed var(--sol-fuerte); border-radius: 16px; padding: .5rem; user-select: all; }
+.codigo-msj { margin: 0; font-weight: 700; color: var(--menta-fuerte); }
+.codigo-msj.mal { color: var(--coral-fuerte); }
+.panel { max-height: calc(100vh - 90px); overflow-y: auto; }
+
+/* ---------- Orden: el nombre (perfil) queda al extremo derecho ---------- */
+.perfil { order: 5; }
+.hamburguesa { order: 6; }
+.docente-btn { background: var(--sol-suave); }
+
+/* ---------- Panel del docente ---------- */
+.panel-docente h2 { font-size: 1.3rem; }
+.panel-docente .nota { margin: -.3rem 0 .2rem; }
+.panel-docente .btn { justify-content: center; }
+.opcion-doc { display: flex; align-items: center; gap: .7rem; width: 100%; min-height: 52px; padding: .4rem .9rem; border-radius: 16px; border: 3px solid var(--linea); background: #fff; cursor: pointer; font: 700 1rem var(--f-titulo); color: var(--tinta); text-align: left; }
+.opcion-doc span:nth-child(2) { flex: 1; }
+.opcion-doc[aria-checked='true'] { border-color: var(--tinta); background: var(--menta-suave); }
+.opcion-doc .aa { font-weight: 800; }
+
+/* El espaciador absorbe el hueco: el perfil/nombre siempre queda pegado a la derecha, aunque la barra se parta en dos filas. */
+.espaciador { flex: 1 1 0; min-width: 0; }
+.marca { margin-right: 0 !important; }
+.perfil { margin-left: auto; }
+@media (min-width: 1001px) and (max-width: 1400px) { .medidor-t { display: none; } .libro { font-size: .9rem; } }
+
+.docente-btn { padding: .2rem 1.2rem; }

@@ -135,7 +135,7 @@ img, svg { max-width: 100%; }
 .selector button small { color: var(--tinta-suave); }
 .selector button[aria-pressed='true'] { border-color: var(--tinta); background: var(--sol-suave); box-shadow: 0 4px 0 var(--tinta); }
 
-input[type='text'], input[type='password'], input[type='number'], textarea, select {
+input[type='text'], input[type='email'], input[type='password'], input[type='number'], textarea, select {
   font: 500 1.1rem var(--f-texto); color: var(--tinta); background: var(--blanco);
   border: 3px solid var(--linea); border-radius: 16px; padding: .7rem 1rem; width: 100%; min-height: 52px;
 }

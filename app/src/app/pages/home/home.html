@@ -39,6 +39,13 @@
     <p>Toca un juego para empezar. Con cada juego ganas hasta 3 estrellas ⭐ y llenas tu medidor de lectura.</p>
   </div>
 
+  @if (!progreso.puedeJugar()) {
+    <div class="aviso-sesion" role="note">
+      <span>🔒 Puedes ver de qué trata cada juego, pero para jugar necesitas tu código. Así guardamos tus estrellas.</span>
+      <button type="button" class="btn btn-menta btn-mini" (click)="acceso.pedirIniciar()">Crear mi código</button>
+    </div>
+  }
+
   @if (!hayJuegos()) {
     <div class="tarjeta centro">
       <h3>Hoy los juegos están descansando</h3>
@@ -65,7 +72,7 @@
             </span>
             <span class="pie">
               <app-estrellas [valor]="progreso.estrellasDe(j.slug)" />
-              <span class="jugar">{{ progreso.partidasDe(j.slug) ? 'Jugar otra vez' : '¡Jugar!' }}</span>
+              <span class="jugar">{{ !progreso.puedeJugar() ? '🔒 Ver' : progreso.partidasDe(j.slug) ? 'Jugar otra vez' : '¡Jugar!' }}</span>
             </span>
           </a>
         }

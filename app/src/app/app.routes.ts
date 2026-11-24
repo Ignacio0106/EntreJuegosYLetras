@@ -30,7 +30,7 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/admin/admin-panel/admin-panel').then((m) => m.AdminPanel),
         title: 'Panel docente',
         canActivate: [authGuard, roleGuard],
-        data: { roles: [Role.ADMIN] },
+        data: { roles: [Role.ADMIN, Role.DOCENTE] },
       },
       {
         path: 'sin-autorizacion',

@@ -1,0 +1,79 @@
+rules_version = '2';
+
+// Pega este contenido en: Consola de Firebase → Firestore Database → Reglas → Publicar.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Docente o administrador: tiene un documento docentes/{su uid}.
+    function esDocente() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/docentes/$(request.auth.uid));
+    }
+
+    // Administrador: su documento tiene rol 'admin'. Un documento SIN campo "rol" cuenta como administrador
+    // (así funciona el primer admin, creado a mano en la consola).
+    function esAdmin() {
+      return esDocente()
+        && get(/databases/$(database)/documents/docentes/$(request.auth.uid)).data.get('rol', 'admin') == 'admin';
+    }
+
+    function soloCampos(campos) {
+      return request.resource.data.keys().hasOnly(campos);
+    }
+
+    // Docentes y administradores. Solo un administrador los ve todos, los crea, cambia o quita
+    // (y nunca puede quitarse ni cambiarse a sí mismo, para que no se quede la app sin admin).
+    match /docentes/{uid} {
+      allow get: if request.auth != null && (request.auth.uid == uid || esAdmin());
+      allow list: if esAdmin();
+      allow create: if esAdmin()
+        && soloCampos(['nombre', 'correo', 'rol'])
+        && request.resource.data.rol in ['admin', 'docente'];
+      allow update: if esAdmin() && request.auth.uid != uid
+        && soloCampos(['nombre', 'correo', 'rol'])
+        && request.resource.data.rol in ['admin', 'docente'];
+      allow delete: if esAdmin() && request.auth.uid != uid;
+    }
+
+    // Solicitudes de personas que se registraron como docentes y esperan aprobación.
+    // - Cualquiera con correo y clave puede dejar UNA solicitud con su propio uid (no los estudiantes anónimos).
+    // - Solo el administrador las ve todas, las aprueba (crea el docente) o las borra.
+    match /solicitudes/{uid} {
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && request.auth.token.firebase.sign_in_provider == 'password'
+        && soloCampos(['nombre', 'correo', 'creado'])
+        && request.resource.data.nombre is string && request.resource.data.nombre.size() <= 40
+        && request.resource.data.correo is string && request.resource.data.correo.size() <= 120
+        && request.resource.data.creado is number;
+      allow get: if request.auth != null && (request.auth.uid == uid || esAdmin());
+      allow list: if esAdmin();
+      allow delete: if esAdmin();
+    }
+
+    // Juegos activados, mensaje del día y público: los ven todos, los cambia cualquier docente o administrador.
+    match /ajustes/{id} {
+      allow read: if true;
+      allow write: if esDocente();
+    }
+
+    // Avance de cada niño, identificado por el código que él eligió (ej. SOFI2015).
+    // - Un código solo se puede leer si se conoce (no se puede listar), así nadie ve los de otros.
+    // - Crear: solo si el código NO existe (por eso nunca se repite) y con formato válido.
+    // - Actualizar: solo quien tiene la "clave" del código (la guarda el aparato del niño al crearlo o recuperarlo).
+    //   Los códigos antiguos sin clave se pueden actualizar una vez para ponerles clave.
+    // - Los docentes y administradores pueden listarlos; solo el administrador puede borrarlos (libera el código).
+    match /lectores/{codigo} {
+      allow get: if request.auth != null;
+      allow list: if esDocente();
+      allow create: if request.auth != null
+        && codigo.matches('^[A-Z0-9-]{4,14}$')
+        && soloCampos(['perfil', 'juegos', 'insignias', 'actualizado', 'clave'])
+        && request.resource.data.clave is string;
+      allow update: if request.auth != null
+        && soloCampos(['perfil', 'juegos', 'insignias', 'actualizado', 'clave'])
+        && (!('clave' in resource.data) || request.resource.data.clave == resource.data.clave);
+      allow delete: if esAdmin();
+    }
+  }
+}

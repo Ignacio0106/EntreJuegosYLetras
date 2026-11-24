@@ -1,18 +1,62 @@
 <div class="pagina">
   <section class="tarjeta caja">
-    <h1>Entrada para docentes</h1>
-    <p>Las niñas y los niños no necesitan entrar: solo tocan un juego y juegan.</p>
-    <form (ngSubmit)="entrar()" autocomplete="off">
-      <label for="usuario">Usuario</label>
-      <input id="usuario" name="usuario" type="text" [(ngModel)]="usuario" required autocapitalize="none" />
-      <label for="clave">Clave</label>
-      <div class="fila">
-        <input id="clave" name="clave" [type]="verClave() ? 'text' : 'password'" [(ngModel)]="clave" required style="flex:1" />
-        <button type="button" class="btn btn-claro btn-mini" (click)="verClave.set(!verClave())">{{ verClave() ? 'Ocultar' : 'Ver' }}</button>
+    <h1>{{ modo() === 'registro' ? 'Crear cuenta de docente' : 'Entrada para docentes' }}</h1>
+    <p>
+      @if (modo() === 'registro') {
+        Llena tus datos. Un administrador revisará tu solicitud y, cuando la apruebe, podrás entrar.
+      } @else {
+        Las niñas y los niños no necesitan entrar: solo tocan un juego y juegan.
+      }
+    </p>
+
+    @if (usaNube) {
+      <div class="modos" role="tablist" aria-label="Entrar o crear cuenta">
+        <button type="button" role="tab" [attr.aria-selected]="modo() === 'entrar'" (click)="cambiarModo('entrar')">Entrar</button>
+        <button type="button" role="tab" [attr.aria-selected]="modo() === 'registro'" (click)="cambiarModo('registro')">Crear cuenta de docente</button>
       </div>
+    }
+
+    <form (ngSubmit)="modo() === 'registro' ? registrarse() : entrar()" autocomplete="on">
+      @if (modo() === 'registro') {
+        <label for="nombre">Tu nombre</label>
+        <input id="nombre" name="nombre" type="text" [(ngModel)]="nombre" required maxlength="40" autocomplete="name" placeholder="Profe Ana" />
+      }
+
+      <label for="usuario">{{ usaNube ? 'Correo' : 'Usuario' }}</label>
+      <input id="usuario" name="usuario" [type]="usaNube ? 'email' : 'text'" [(ngModel)]="usuario" required autocapitalize="none" autocomplete="username"
+        [placeholder]="usaNube ? 'nombre@correo.com' : 'usuario'" />
+
+      <label for="clave">Clave</label>
+      <div class="campo-clave">
+        <input id="clave" name="clave" [type]="verClave() ? 'text' : 'password'" [(ngModel)]="clave" required
+          [autocomplete]="modo() === 'registro' ? 'new-password' : 'current-password'"
+          [placeholder]="modo() === 'registro' ? 'Mínimo 6 caracteres' : 'Tu clave'" />
+        <button type="button" class="ojo" (click)="verClave.set(!verClave())" [attr.aria-pressed]="verClave()" [attr.aria-label]="verClave() ? 'Ocultar la clave' : 'Mostrar la clave'">
+          @if (verClave()) {
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+              <line x1="1" y1="1" x2="23" y2="23" />
+            </svg>
+          } @else {
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          }
+        </button>
+      </div>
+
+      @if (usaNube && modo() === 'entrar') {
+        <button type="button" class="enlace" (click)="olvide()" [disabled]="cargando()">¿Olvidaste tu clave?</button>
+      }
+
+      @if (aviso()) { <p class="aviso-ok" role="status">{{ aviso() }}</p> }
       @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
-      <div class="fila acciones">
-        <button type="submit" class="btn btn-menta btn-grande">Entrar</button>
+
+      <div class="acciones">
+        <button type="submit" class="btn btn-menta" [disabled]="cargando()">
+          {{ cargando() ? (modo() === 'registro' ? 'Enviando…' : 'Entrando…') : (modo() === 'registro' ? 'Enviar solicitud' : 'Entrar') }}
+        </button>
         <a class="btn btn-claro" routerLink="/">Volver a jugar</a>
       </div>
     </form>

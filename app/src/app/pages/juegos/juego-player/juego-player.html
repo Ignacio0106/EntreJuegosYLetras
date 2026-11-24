@@ -11,7 +11,22 @@
     <p class="aviso-admin">Este juego está desactivado para los estudiantes. Tú lo ves porque eres administrador.</p>
   }
 
-  @if (componente(); as c) {
+  @if (!puede() && juego(); as j) {
+    <section class="tarjeta centro bloqueado">
+      <p class="candado" aria-hidden="true">🔒</p>
+      <h2>Para jugar, primero crea tu código</h2>
+      <p>Así guardamos tus estrellas y tus insignias, y no se pierden cuando vuelvas.</p>
+      <div class="de-que-trata">
+        <strong>De qué trata</strong>
+        <p>{{ j.descripcion }}</p>
+        <p class="datos"><span class="etiqueta-chip">{{ j.habilidad }}</span> <span class="etiqueta-chip">{{ j.edad }}</span> <span class="etiqueta-chip">{{ j.duracion }}</span></p>
+      </div>
+      <div class="fila centro">
+        <button type="button" class="btn btn-menta btn-grande" (click)="acceso.pedirIniciar()">Crear mi código</button>
+        <a class="btn btn-claro" routerLink="/login">Soy docente</a>
+      </div>
+    </section>
+  } @else if (componente(); as c) {
     <ng-container *ngComponentOutlet="c" />
   } @else if (error()) {
     <section class="tarjeta centro">

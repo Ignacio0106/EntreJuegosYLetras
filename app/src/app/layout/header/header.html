@@ -3,52 +3,116 @@
     <span class="logo" aria-hidden="true">📖</span>
     <span class="nombre">¡El juego de leer!</span>
   </a>
+  <span class="espaciador" aria-hidden="true"></span>
 
-  <button type="button" class="perfil" (click)="abrir('perfil')" [attr.aria-expanded]="panel() === 'perfil'" aria-label="Mi perfil">
-    <span class="avatar" aria-hidden="true">{{ progreso.perfil().avatar }}</span>
-    <span class="quien">{{ progreso.perfil().nombre }}</span>
-  </button>
+  @if (auth.esDocente()) {
+    <!-- Docente: solo su nombre; todo lo demás va dentro de su panel -->
+    <button type="button" class="perfil docente-btn" (click)="abrir('docente')" [attr.aria-expanded]="panel() === 'docente'" aria-label="Menú del docente">
+      <span class="quien">{{ auth.usuario()?.nombre }}</span>
+    </button>
+  } @else {
+    <button type="button" class="perfil" (click)="abrir('perfil')" [attr.aria-expanded]="panel() === 'perfil'" aria-label="Mi perfil">
+      <span class="avatar" aria-hidden="true">{{ progreso.perfil().avatar }}</span>
+      <span class="quien">{{ progreso.perfil().nombre }}</span>
+    </button>
 
-  <button type="button" class="hamburguesa" (click)="menu.set(!menu())" [attr.aria-expanded]="menu()" aria-controls="menu-cab" aria-label="Menú">
-    <span class="rayas" aria-hidden="true"></span>
-  </button>
+    <button type="button" class="hamburguesa" (click)="menu.set(!menu())" [attr.aria-expanded]="menu()" aria-controls="menu-cab" aria-label="Menú">
+      <span class="rayas" aria-hidden="true"></span>
+    </button>
 
-  <div class="menu" id="menu-cab" [class.abierto]="menu()">
-  <div class="medidor" role="img" [attr.aria-label]="'Medidor de lectura: ' + progreso.estrellas() + ' estrellas de ' + progreso.meta">
-    <span class="medidor-t">Mi medidor</span>
-    <span class="libros">
-      @for (l of progreso.libros; track l) { <span class="libro" [class.lleno]="l < progreso.librosLlenos()" aria-hidden="true">📘</span> }
-    </span>
-    <span class="est">⭐ {{ progreso.estrellas() }}</span>
-  </div>
+    <div class="menu" id="menu-cab" [class.abierto]="menu()">
+      @if (iniciado()) {
+        <div class="medidor" role="img" [attr.aria-label]="'Medidor de lectura: ' + progreso.estrellas() + ' estrellas de ' + progreso.meta">
+          <span class="medidor-t">Mi medidor</span>
+          <span class="libros">
+            @for (l of progreso.libros; track l) { <span class="libro" [class.lleno]="l < progreso.librosLlenos()" aria-hidden="true">📘</span> }
+          </span>
+          <span class="est">⭐ {{ progreso.estrellas() }}</span>
+        </div>
 
-  <button type="button" class="insignias" (click)="abrir('insignias')" [attr.aria-expanded]="panel() === 'insignias'" aria-label="Mis insignias">
-    @for (i of progreso.insignias(); track i.id) { <span class="ins" [class.ganada]="i.ganada" aria-hidden="true">{{ i.icono }}</span> }
-  </button>
+        <button type="button" class="insignias" (click)="abrir('insignias')" [attr.aria-expanded]="panel() === 'insignias'" aria-label="Mis insignias">
+          @for (i of progreso.insignias(); track i.id) { <span class="ins" [class.ganada]="i.ganada" aria-hidden="true">{{ i.icono }}</span> }
+        </button>
+      }
 
-  <div class="ajustes">
-    <button type="button" class="icono" (click)="efectos.alternarSonido()" [attr.aria-pressed]="efectos.sonidoActivo()" [attr.aria-label]="efectos.sonidoActivo() ? 'Apagar sonidos' : 'Encender sonidos'">{{ efectos.sonidoActivo() ? '🔔' : '🔕' }}</button>
-    <button type="button" class="icono letra" (click)="config.letraGrande.set(!config.letraGrande())" [attr.aria-pressed]="config.letraGrande()" aria-label="Letra grande">Aa</button>
-    @if (auth.esAdmin()) {
-      <a class="docente" routerLink="/admin">⚙ Panel</a>
-      <button type="button" class="docente" (click)="salir()">Salir</button>
-    } @else {
-      <a class="docente suave" routerLink="/login">Docentes</a>
-    }
-  </div>
-  </div>
+      <div class="ajustes">
+        <button type="button" class="icono" (click)="efectos.alternarSonido()" [attr.aria-pressed]="efectos.sonidoActivo()" [attr.aria-label]="efectos.sonidoActivo() ? 'Apagar sonidos' : 'Encender sonidos'">{{ efectos.sonidoActivo() ? '🔊' : '🔇' }}</button>
+        <button type="button" class="icono letra" (click)="config.letraGrande.set(!config.letraGrande())" [attr.aria-pressed]="config.letraGrande()" aria-label="Letra grande">Aa</button>
+        <!-- Quien ya tiene su código de lector no ve la entrada de docentes -->
+        @if (!progreso.codigo()) {
+          <a class="docente suave" routerLink="/login">Docentes</a>
+        }
+      </div>
+    </div>
+  }
+
+  @if (panel() === 'docente' && auth.esDocente()) {
+    <div class="panel panel-docente" role="dialog" aria-label="Menú del docente">
+      <h2>{{ auth.usuario()?.nombre }}</h2>
+      <p class="nota">{{ auth.esAdmin() ? 'Administrador' : 'Docente' }}</p>
+      <a class="btn btn-sol" routerLink="/admin" (click)="panel.set(null)">⚙ Panel docente</a>
+      <button type="button" class="opcion-doc" role="switch" [attr.aria-checked]="efectos.sonidoActivo()" (click)="efectos.alternarSonido()">
+        <span aria-hidden="true">{{ efectos.sonidoActivo() ? '🔊' : '🔇' }}</span>
+        <span>Sonidos</span>
+        <strong>{{ efectos.sonidoActivo() ? 'Sí' : 'No' }}</strong>
+      </button>
+      <button type="button" class="opcion-doc" role="switch" [attr.aria-checked]="config.letraGrande()" (click)="config.letraGrande.set(!config.letraGrande())">
+        <span class="aa" aria-hidden="true">Aa</span>
+        <span>Letra grande</span>
+        <strong>{{ config.letraGrande() ? 'Sí' : 'No' }}</strong>
+      </button>
+      <div class="fila">
+        <button type="button" class="btn btn-coral btn-mini" (click)="salir()">Salir</button>
+        <button type="button" class="btn btn-claro btn-mini" (click)="panel.set(null)">Cerrar</button>
+      </div>
+    </div>
+  }
 
   @if (panel() === 'perfil') {
     <div class="panel" role="dialog" aria-label="Mi perfil">
-      <h2>¿Cómo te llamas?</h2>
-      <input type="text" name="nombre" maxlength="14" [(ngModel)]="nombre" aria-label="Tu nombre o apodo" />
-      <p class="nota">Elige tu compañero de lectura:</p>
-      <div class="avatares">
-        @for (a of avatares; track a) {
-          <button type="button" class="av" [class.sel]="avatar === a" (click)="avatar = a" [attr.aria-label]="'Compañero ' + a">{{ a }}</button>
+      @if (iniciado()) {
+        <h2>¿Cómo te llamas?</h2>
+        <input type="text" name="nombre" maxlength="14" [(ngModel)]="nombre" aria-label="Tu nombre o apodo" />
+        <p class="nota">Elige tu compañero de lectura:</p>
+        <div class="avatares">
+          @for (a of avatares; track a) {
+            <button type="button" class="av" [class.sel]="avatar === a" (click)="avatar = a" [attr.aria-label]="'Compañero ' + a">{{ a }}</button>
+          }
+        </div>
+        <div class="fila"><button type="button" class="btn btn-menta" (click)="guardar()">Guardar</button><button type="button" class="btn btn-claro btn-mini" (click)="panel.set(null)">Cerrar</button></div>
+      } @else {
+        <h2>¡Bienvenido!</h2>
+        <p class="nota">Primero inventa tu código secreto. Después podrás ponerte nombre y elegir a tu compañero de lectura.</p>
+      }
+
+      @if (progreso.usaNube) {
+        <section class="codigo" aria-label="Mi código de lector">
+          @if (progreso.codigo(); as c) {
+            <p class="nota">Tu código de lector. ¡No lo olvides! Con él sigues jugando en cualquier aparato:</p>
+            <p class="codigo-tu" aria-live="polite">{{ c }}</p>
+            @if (mensajeCodigo(); as m) { <p class="codigo-msj" [class.mal]="!m.ok" role="status">{{ m.texto }}</p> }
+            <button type="button" class="btn btn-claro btn-mini" (click)="otroNino()">Cerrar sesión</button>
+          } @else {
+            <label for="codigo-nuevo">Inventa tu código secreto</label>
+            <p class="nota">De 4 a 14 letras o números, como SOFI2015. Nadie más puede tener el mismo.</p>
+            <div class="fila">
+              <input id="codigo-nuevo" type="text" name="codigoNuevo" maxlength="14" autocomplete="off" autocapitalize="characters" placeholder="SOFI2015" style="flex:1; min-width: 0" [(ngModel)]="codigoNuevo" (keydown.enter)="crearCodigo()" />
+              <button type="button" class="btn btn-claro btn-mini" (click)="sugerirCodigo()" aria-label="Sugerir un código">🎲</button>
+            </div>
+            <button type="button" class="btn btn-menta btn-mini" [disabled]="creandoCodigo() || !codigoNuevo.trim()" (click)="crearCodigo()">{{ creandoCodigo() ? 'Creando…' : 'Crear mi código' }}</button>
+            @if (mensajeCodigo(); as m) { <p class="codigo-msj" [class.mal]="!m.ok" role="status">{{ m.texto }}</p> }
+
+            <label for="codigo-in">¿Ya tienes un código?</label>
+            <div class="fila">
+              <input id="codigo-in" type="text" name="codigo" maxlength="14" autocomplete="off" autocapitalize="characters" placeholder="SOFI2015" style="flex:1; min-width: 0" [(ngModel)]="codigoEscrito" (keydown.enter)="usarCodigo()" />
+              <button type="button" class="btn btn-cielo btn-mini" [disabled]="buscandoCodigo() || !codigoEscrito.trim()" (click)="usarCodigo()">{{ buscandoCodigo() ? 'Buscando…' : 'Usar' }}</button>
+            </div>
+          }
+        </section>
+        @if (!iniciado()) {
+          <button type="button" class="btn btn-claro btn-mini" (click)="panel.set(null)">Cerrar</button>
         }
-      </div>
-      <div class="fila"><button type="button" class="btn btn-menta" (click)="guardar()">Guardar</button><button type="button" class="btn btn-claro btn-mini" (click)="panel.set(null)">Cerrar</button></div>
+      }
     </div>
   }
 

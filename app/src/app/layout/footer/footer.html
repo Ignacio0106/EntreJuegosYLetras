@@ -4,7 +4,7 @@
       <a routerLink="/">Inicio</a>
       <a routerLink="/" fragment="juegos">Juegos</a>
       <a routerLink="/" fragment="derechos">Derechos</a>
-      @if (auth.esAdmin()) { <a routerLink="/admin">Panel docente</a> } @else { <a routerLink="/login">Docentes</a> }
+      @if (auth.esDocente()) { <a routerLink="/admin">Panel docente</a> } @else { <a routerLink="/login">Docentes</a> }
     </nav>
     <p class="frase">Leer es un derecho y también un juego. 🦥</p>
     <div class="creditos">

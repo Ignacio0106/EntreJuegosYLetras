@@ -19,3 +19,9 @@
 table { width: 100%; border-collapse: collapse; margin-top: .8rem; }
 th, td { text-align: left; padding: .6rem .5rem; border-bottom: 2px solid var(--linea); }
 th { font-family: var(--f-titulo); }
+.cod { font-family: var(--f-titulo); letter-spacing: .06em; user-select: all; }
+.aviso-error { background: var(--coral-suave); border-radius: 12px; padding: .6rem .9rem; font-weight: 700; color: var(--coral-fuerte); }
+
+.contador { display: inline-grid; place-items: center; min-width: 1.5em; height: 1.5em; margin-left: .3em; padding: 0 .35em; border-radius: 999px; background: var(--coral); color: var(--tinta); font-size: .85em; }
+.yo { font-weight: 600; color: var(--tinta-suave); }
+.vacio { color: var(--tinta-suave); }
